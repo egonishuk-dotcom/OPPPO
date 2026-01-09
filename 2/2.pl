@@ -58,9 +58,9 @@ matches(maxSpeed, Op, V, vehicle(car, _, _, Params)) :-
     member(maxSpeed=S, Params),
     compare_val(Op, S, V).
 
-compare_val('>', A, B) :- A > B.
-compare_val('<', A, B) :- A < B.
-compare_val('==', A, B) :- A =:= B.
+compare_val(Op, A, B) :-
+    Goal =.. [Op, A, B],
+    call(Goal).
 
 remove_by_condition(Field, Op, Value) :-
     forall(
