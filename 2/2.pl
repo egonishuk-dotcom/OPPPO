@@ -143,3 +143,6 @@ parse_params([H|T], [Key=Value|Rest]) :-
     atom_string(Key, K),
     ( number_string(Value, V) -> true ; atom_string(Value, V) ),
     parse_params(T, Rest).
+
+command(_) :-
+    writeln('Ошибка: неизвестная команда').
