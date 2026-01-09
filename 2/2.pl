@@ -6,6 +6,7 @@
 :- encoding(utf8).
 :- dynamic vehicle/4.
 
+
 % ==============================
 % ADD
 % ==============================
@@ -15,14 +16,14 @@ add_vehicle(truck, Params) :-
     member(country=Country, Params),
     member(loadCapacity=Load, Params),
     assertz(vehicle(truck, Power, Country,
-            [loadCapacity=Load])).
+            [loadCapacity=Load])), !.
 
 add_vehicle(bus, Params) :-
     member(enginePower=Power, Params),
     member(country=Country, Params),
     member(passengerCapacity=Passengers, Params),
     assertz(vehicle(bus, Power, Country,
-            [passengerCapacity=Passengers])).
+            [passengerCapacity=Passengers])), !.
 
 add_vehicle(car, Params) :-
     member(enginePower=Power, Params),
@@ -30,7 +31,7 @@ add_vehicle(car, Params) :-
     member(doors=Doors, Params),
     member(maxSpeed=Speed, Params),
     assertz(vehicle(car, Power, Country,
-            [doors=Doors, maxSpeed=Speed])).
+            [doors=Doors, maxSpeed=Speed])), !.
 
 % ==============================
 % REM (условия)
@@ -59,6 +60,7 @@ matches(maxSpeed, Op, V, vehicle(car, _, _, Params)) :-
     compare_val(Op, S, V).
 
 compare_val(Op, A, B) :-
+    member(Op, ['>', '<', '==']),
     Goal =.. [Op, A, B],
     call(Goal).
 
@@ -92,11 +94,9 @@ print_vehicle(bus, P, C, [passengerCapacity=PC]) :-
     format('Bus(power=~w, country=~w, passengers=~w)~n',
            [P, C, PC]).
 
-print_vehicle(car, P, C, Params) :-
-    member(doors=D, Params),
-    member(maxSpeed=S, Params),
+print_vehicle(car, P, C, [doors=D, maxSpeed=S]) :-
     format('Car(power=~w, country=~w, doors=~w, max_speed=~w)~n',
-           [P, C, D, S]).
+           [P, C, D, S]), !.
 
 % ==============================
 % Обработка файла
@@ -131,8 +131,10 @@ command(["REM", FieldStr, OpStr, ValueStr]) :-
     remove_by_condition(Field, Op, Value).
 
 command(["PRINT"]) :-
-    print_container.
+    print_container, !.
 
+command(_) :-
+    writeln('Ошибка: неизвестная команда').
 % ==============================
 % Парсинг параметров
 % ==============================
@@ -143,6 +145,3 @@ parse_params([H|T], [Key=Value|Rest]) :-
     atom_string(Key, K),
     ( number_string(Value, V) -> true ; atom_string(Value, V) ),
     parse_params(T, Rest).
-
-command(_) :-
-    writeln('Ошибка: неизвестная команда').
