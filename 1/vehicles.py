@@ -11,27 +11,22 @@ class Vehicle:
     def matches_condition(self, field, operator, value):
         """Проверяет, соответствует ли атрибут заданному условию."""
         field_map = {
-            "enginePower": "engine_power",
-            "country": "country",
-            "loadCapacity": "load_capacity",
-            "passengerCapacity": "passenger_capacity",
-            "doors": "doors",
-            "maxSpeed": "max_speed"
+        "enginePower": "engine_power",
+        "country": "country",
+        "loadCapacity": "load_capacity",
+        "passengerCapacity": "passenger_capacity",
+        "doors": "doors",
+        "maxSpeed": "max_speed"
         }
-
-        real_field = field_map.get(field)
-        if real_field is None:
-            return False
-
-        attr = getattr(self, real_field, None)
+        attr = getattr(self, field_map.get(field, ""), None)
         if attr is None:
             return False
 
         if operator == ">":
             return attr > value
-        if operator == "<":
+        elif operator == "<":
             return attr < value
-        if operator == "==":
+        elif operator == "==":
             return attr == value
         return False
 
@@ -93,8 +88,8 @@ class CommandProcessor:
         self.container = []
 
     def process_add(self, parts):
-        """Обрабатывает команду ADD, 
-        создаёт объект транспортного средства и добавляет в контейнер."""
+        """Обрабатывает команду ADD, создаёт объект транспортного средства и добавляет в контейнер."""
+    
         vehicle_type = parts[1]
         params = {}
 
@@ -102,32 +97,33 @@ class CommandProcessor:
             key, value = p.split("=")
             params[key] = value
 
+    # Приведение типов параметров
+        param_types = {
+            "enginePower": int,
+            "loadCapacity": int,
+            "passengerCapacity": int,
+            "doors": int,
+            "maxSpeed": int,
+            "country": str
+        }
+
+        for k, v in params.items():
+            if k in param_types:
+                params[k] = param_types[k](v)
+
+        # Создание объекта в зависимости от типа
         if vehicle_type == "Truck":
-            obj = Truck(
-                int(params["enginePower"]),
-                params["country"],
-                int(params["loadCapacity"])
-            )
-
+            obj = Truck(params["enginePower"], params["country"], params["loadCapacity"])
         elif vehicle_type == "Bus":
-            obj = Bus(
-                int(params["enginePower"]),
-                params["country"],
-                int(params["passengerCapacity"])
-            )
-
+            obj = Bus(params["enginePower"], params["country"], params["passengerCapacity"])
         elif vehicle_type == "Car":
-            obj = Car(
-                int(params["enginePower"]),
-                params["country"],
-                int(params["doors"]),
-                int(params["maxSpeed"])
-            )
+            obj = Car(params["enginePower"], params["country"], params["doors"], params["maxSpeed"])
         else:
             print(f"Неизвестный тип объекта: {vehicle_type}")
             return
 
         self.container.append(obj)
+
 
     def process_rem(self, parts):
         """Обрабатывает команду REM, удаляет объекты из контейнера по условию."""
