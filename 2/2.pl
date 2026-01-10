@@ -103,6 +103,7 @@ print_vehicle(car, P, C, [doors=D, maxSpeed=S]) :-
 % ==============================
 
 execute_file(File) :-
+    retractall(vehicle(_,_,_,_)),
     open(File, read, Stream),
     repeat,
         read_line_to_string(Stream, Line),
@@ -112,23 +113,27 @@ execute_file(File) :-
           fail
         ).
 
-process_line("") :- !.
 process_line(Line) :-
-    split_string(Line, " ", "", Parts),
-    command(Parts).
+    normalize_space(string(Trimmed), Line),
+    ( Trimmed = "" ->
+        true
+    ; split_string(Trimmed, " ", "", Parts),
+      command(Parts)
+    ).
+
 
 command(["ADD", TypeStr | ParamsStr]) :-
     string_lower(TypeStr, LowerStr),
     atom_string(Type, LowerStr),
     parse_params(ParamsStr, Params),
-    add_vehicle(Type, Params).
+    add_vehicle(Type, Params), !.
 
 
 command(["REM", FieldStr, OpStr, ValueStr]) :-
     atom_string(Field, FieldStr),
     atom_string(Op, OpStr),
     ( number_string(Value, ValueStr) -> true ; atom_string(Value, ValueStr) ),
-    remove_by_condition(Field, Op, Value).
+    remove_by_condition(Field, Op, Value), !.
 
 command(["PRINT"]) :-
     print_container, !.
