@@ -1,15 +1,5 @@
-% ==============================
-% Практическая работа 1.1
-% Обработка команд ADD / REM / PRINT
-% Язык: Prolog
-% ==============================
 :- encoding(utf8).
 :- dynamic vehicle/4.
-
-
-% ==============================
-% ADD
-% ==============================
 
 add_vehicle(truck, Params) :-
     member(enginePower=Power, Params),
@@ -32,10 +22,6 @@ add_vehicle(car, Params) :-
     member(maxSpeed=Speed, Params),
     assertz(vehicle(car, Power, Country,
             [doors=Doors, maxSpeed=Speed])), !.
-
-% ==============================
-% REM (условия)
-% ==============================
 
 matches(enginePower, '>', V, vehicle(_, Power, _, _)) :- Power > V.
 matches(enginePower, '<', V, vehicle(_, Power, _, _)) :- Power < V.
@@ -71,9 +57,6 @@ remove_by_condition(Field, Op, Value) :-
         retract(vehicle(T, P, C, Params))
     ).
 
-% ==============================
-% PRINT
-% ==============================
 
 print_container :-
     findall(vehicle(T,P,C,Params), vehicle(T,P,C,Params), List),
@@ -97,10 +80,6 @@ print_vehicle(bus, P, C, [passengerCapacity=PC]) :-
 print_vehicle(car, P, C, [doors=D, maxSpeed=S]) :-
     format('Car(power=~w, country=~w, doors=~w, max_speed=~w)~n',
            [P, C, D, S]), !.
-
-% ==============================
-% Обработка файла
-% ==============================
 
 execute_file(File) :-
     retractall(vehicle(_,_,_,_)),
@@ -140,9 +119,6 @@ command(["PRINT"]) :-
 
 command(_) :-
     writeln('Ошибка: неизвестная команда').
-% ==============================
-% Парсинг параметров
-% ==============================
 
 parse_params([], []).
 parse_params([H|T], [Key=Value|Rest]) :-
