@@ -1,0 +1,7 @@
+ADD Truck enginePower=400 country=Germany loadCapacity=12000
+ADD Bus enginePower=250 country=Russia passengerCapacity=45
+ADD Car enginePower=180 country=Japan doors=4 maxSpeed=220
+ADD Car enginePower=320 country=Germany doors=2 maxSpeed=280
+PRINT
+REM enginePower > 300
+PRINT
