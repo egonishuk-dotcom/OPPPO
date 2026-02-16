@@ -99,42 +99,45 @@ class CommandProcessor:
         self.container: List[Vehicle] = []
 
 
-    def process_add(self, parts):
-        """Обрабатывает команду ADD, создаёт объект транспортного средства и добавляет в контейнер."""
-    
+    def process_add(self, parts: List[str]) -> None:
+        """Обрабатывает команду ADD и добавляет объект в контейнер."""
+        if len(parts) < 3:
+            raise ValueError("Недостаточно параметров для ADD")
+
         vehicle_type = parts[1]
         params = {}
 
         for p in parts[2:]:
-            key, value = p.split("=")
-            params[key] = value
+            try:
+                key, value = p.split("=")
+                params[key] = value
+            except ValueError:
+                raise ValueError(f"Неверный формат параметра: {p}")
 
-    # Приведение типов параметров
         param_types = {
             "enginePower": int,
             "loadCapacity": int,
             "passengerCapacity": int,
             "doors": int,
             "maxSpeed": int,
-            "country": str
+            "country": str,
         }
 
-        for k, v in params.items():
-            if k in param_types:
-                params[k] = param_types[k](v)
+        for key, value in params.items():
+            if key in param_types:
+                params[key] = param_types[key](value)
 
-        # Создание объекта в зависимости от типа
-        if vehicle_type == "Truck":
-            obj = Truck(params["enginePower"], params["country"], params["loadCapacity"])
-        elif vehicle_type == "Bus":
-            obj = Bus(params["enginePower"], params["country"], params["passengerCapacity"])
-        elif vehicle_type == "Car":
-            obj = Car(params["enginePower"], params["country"], params["doors"], params["maxSpeed"])
-        else:
-            print(f"Неизвестный тип объекта: {vehicle_type}")
-            return
+        vehicle_map = {
+            "Truck": lambda p: Truck(p["enginePower"], p["country"], p["loadCapacity"]),
+            "Bus": lambda p: Bus(p["enginePower"], p["country"], p["passengerCapacity"]),
+            "Car": lambda p: Car(p["enginePower"], p["country"], p["doors"], p["maxSpeed"]),
+        }
 
-        self.container.append(obj)
+        creator = vehicle_map.get(vehicle_type)
+        if not creator:
+            raise ValueError(f"Неизвестный тип объекта: {vehicle_type}")
+
+        self.container.append(creator(params))
 
 
     def process_rem(self, parts):
