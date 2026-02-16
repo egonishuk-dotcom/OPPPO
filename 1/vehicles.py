@@ -163,23 +163,29 @@ class CommandProcessor:
         for obj in self.container:
             print(obj)
 
-    def execute_file(self, filename):
+    def execute_file(self, filename: str) -> None:
         """Считывает команды из файла и выполняет их построчно."""
-        with open(filename, encoding="utf-8") as file:
-            for line in file:
-                line = line.strip()
-                if not line:
-                    continue
+        try:
+            with open(filename, encoding="utf-8") as file:
+                for line in file:
+                    line = line.strip()
+                    if not line:
+                        continue
 
-                parts = line.split()
-                command = parts[0]
+                    parts = line.split()
+                    command = parts[0]
 
-                if command == "ADD":
-                    self.process_add(parts)
-                elif command == "REM":
-                    self.process_rem(parts)
-                elif command == "PRINT":
-                    self.process_print()
+                    if command == "ADD":
+                        self.process_add(parts)
+                    elif command == "REM":
+                        self.process_rem(parts)
+                    elif command == "PRINT":
+                        self.process_print()
+                    else:
+                        print(f"Неизвестная команда: {command}")
+        except FileNotFoundError:
+            print(f"Файл {filename} не найден")
+
 
 
 # Точка входа
