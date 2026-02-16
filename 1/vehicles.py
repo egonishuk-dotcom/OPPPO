@@ -95,8 +95,9 @@ class Car(Vehicle):
 # Обработчик команд
 class CommandProcessor:
     """Класс для обработки команд ADD, REM и PRINT с контейнером транспортных средств."""
-    def __init__(self):
-        self.container = []
+    def __init__(self) -> None:
+        self.container: List[Vehicle] = []
+
 
     def process_add(self, parts):
         """Обрабатывает команду ADD, создаёт объект транспортного средства и добавляет в контейнер."""
