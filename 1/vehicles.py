@@ -140,7 +140,7 @@ class CommandProcessor:
         self.container.append(creator(params))
 
 
-    def process_rem(self, parts):
+    def process_rem(self, parts: List[str]) -> None:
         """Обрабатывает команду REM, удаляет объекты из контейнера по условию."""
         field = parts[1]
         operator = parts[2]
