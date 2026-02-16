@@ -10,27 +10,36 @@ class Vehicle:
         self.engine_power = engine_power
         self.country = country
 
-    def matches_condition(self, field, operator, value):
-        """Проверяет, соответствует ли атрибут заданному условию."""
+    def matches_condition(self, field: str, op: str, value) -> bool:
         field_map = {
-        "enginePower": "engine_power",
-        "country": "country",
-        "loadCapacity": "load_capacity",
-        "passengerCapacity": "passenger_capacity",
-        "doors": "doors",
-        "maxSpeed": "max_speed"
+            "enginePower": "engine_power",
+            "country": "country",
+            "loadCapacity": "load_capacity",
+            "passengerCapacity": "passenger_capacity",
+            "doors": "doors",
+            "maxSpeed": "max_speed",
         }
-        attr = getattr(self, field_map.get(field, ""), None)
+
+        attr_name = field_map.get(field)
+        if not attr_name:
+            return False
+
+        attr = getattr(self, attr_name, None)
         if attr is None:
             return False
 
-        if operator == ">":
-            return attr > value
-        elif operator == "<":
-            return attr < value
-        elif operator == "==":
-            return attr == value
-        return False
+        operators = {
+            ">": operator.gt,
+            "<": operator.lt,
+            "==": operator.eq,
+        }
+
+        operation = operators.get(op)
+        if not operation:
+            return False
+
+        return operation(attr, value)
+
 
     def __str__(self):
         return f"Vehicle(power={self.engine_power}, country={self.country})"
