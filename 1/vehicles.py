@@ -1,3 +1,5 @@
+from typing import List
+import operator
 # Базовый класс
 """ Модуль для работы с транспортными средствами.
 Содержит классы Vehicle, Truck, Bus, Car и обработчик команд CommandProcessor. """
